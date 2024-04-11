@@ -14,7 +14,6 @@ model_paths = {
     'dia-large' : 'microsoft/DialoGPT-large' }
 
 
-
 app = Flask(__name__)
 
 step = 0
