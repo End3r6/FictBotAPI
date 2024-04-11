@@ -2,3 +2,4 @@ torch
 flask
 transformers
 pandas
+gunicorn
