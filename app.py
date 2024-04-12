@@ -9,9 +9,9 @@ chat_model_tokenizer = None
 
 model_paths = {
     # 'tony' : './models/tony_chatbot',
-    'dia-small' : 'microsoft/DialoGPT-small',
-    'dia-medium' : 'microsoft/DialoGPT-medium',
-    'dia-large' : 'microsoft/DialoGPT-large' }
+    'dia_small' : 'microsoft/DialoGPT-small',
+    'dia_medium' : 'microsoft/DialoGPT-medium',
+    'dia_large' : 'microsoft/DialoGPT-large' }
 
 
 app = Flask(__name__)
@@ -28,7 +28,7 @@ def get_response():
     get_model_from_name(model_name)
 
     if chat_model is None:
-        get_model_from_name('dia-medium')
+        get_model_from_name('dia_medium')
 
     response = model.generate_response(chat_model, chat_model_tokenizer, prompt, step, max_length=30)
 
