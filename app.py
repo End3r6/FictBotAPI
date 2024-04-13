@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import model
@@ -15,6 +16,7 @@ model_paths = {
 
 
 app = Flask(__name__)
+CORS(app)
 
 step = 0
 
@@ -34,8 +36,7 @@ def get_response():
 
     step += 1
 
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return jsonify({'name': model_name, 'response' : response})
+    return jsonify({'name': model_name, 'response' : response}).headers.add("Access-Control-Allow-Origin", "*")
 
 def get_model_from_name(name):
     global chat_model
