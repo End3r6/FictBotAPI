@@ -33,7 +33,7 @@ def get_response():
     response = model.generate_response(chat_model, chat_model_tokenizer, prompt, step, max_length=30)
 
     step += 1
-    
+
     response.headers.add("Access-Control-Allow-Origin", "*")
     return jsonify({'name': model_name, 'response' : response})
 
