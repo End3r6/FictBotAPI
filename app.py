@@ -38,6 +38,11 @@ def get_response():
     return jsonify({'name': model_name, 'response' : response}).headers.add("Access-Control-Allow-Origin", "*")
 
 
+@app.route('/test', methods=['GET'])
+def get_response():
+    return jsonify({'name': 'test', 'response' : 'test'}).headers.add("Access-Control-Allow-Origin", "*")
+
+
 
 
 if __name__ == '__main__':
