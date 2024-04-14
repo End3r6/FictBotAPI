@@ -42,7 +42,9 @@ def get_model_from_name(name):
     global chat_model
     global chat_model_tokenizer
 
-
+    if name not in model_paths:
+        name = 'dia_medium'
+        
     path =  model_paths[name]
 
     chat_model = AutoModelForCausalLM.from_pretrained(path)
