@@ -35,12 +35,12 @@ def get_response():
 
     step += 1
 
-    return jsonify({'name': model_name, 'response' : response}).headers.add("Access-Control-Allow-Origin", "*")
+    return jsonify({'name': model_name, 'response' : response})
 
 
 @app.route('/test', methods=['GET'])
 def get_test():
-    return jsonify({'name': 'test', 'response' : 'test'}).headers.add("Access-Control-Allow-Origin", "*")
+    return jsonify({'name': 'test', 'response' : 'test'})
 
 
 
