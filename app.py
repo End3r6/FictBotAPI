@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import model
 from flask_cors import CORS
@@ -9,30 +8,43 @@ model_paths = {
     'dia_small' : 'microsoft/DialoGPT-small',
     'dia_medium' : 'microsoft/DialoGPT-medium',
     'dia_large' : 'microsoft/DialoGPT-large', 
-    'blender_400m' : 'facebook/blenderbot-400M-distill' }
-
+    'blender_400m' : 'facebook/blenderbot-400M-distill'
+}
 
 app = Flask(__name__)
 CORS(app)
 
 step = 0
+chat_model = None
+chat_model_tokenizer = None
+model_name = None
 
-@app.route('/chat', methods=['GET'])
-def get_response():
-    global step
+
+@app.route('/model', methods=['POST'])
+def post_model():
+    global chat_model, chat_model_tokenizer, model_name
 
     model_name = request.args.get('model_name')
-    prompt = request.args.get('prompt')
 
     if model_name is None:
         model_name = 'dia_medium'
-    if prompt is None:
-        prompt = 'Hello'
 
-    path =  model_paths[model_name]
+    path = model_paths[model_name]
 
     chat_model = AutoModelForCausalLM.from_pretrained(path)
     chat_model_tokenizer = AutoTokenizer.from_pretrained(path)
+
+    return ""
+
+
+@app.route('/chat', methods=['GET'])
+def get_response():
+    global step, chat_model, chat_model_tokenizer, model_name
+
+    prompt = request.args.get('prompt')
+
+    if prompt is None:
+        prompt = 'Hello'
 
     response = model.generate_response(chat_model, chat_model_tokenizer, prompt, step, max_length=30)
 
@@ -50,10 +62,8 @@ def get_response():
 
 @app.route('/test', methods=['GET'])
 def get_test():
-    return jsonify({'name': 'test', 'response' : 'test'})
-
-
+    return jsonify({'name': 'test', 'response': 'test'})
 
 
 if __name__ == '__main__':
-   app.run(port=5000)
+    app.run(port=5000)
