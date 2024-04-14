@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from transformers import Conversation
+from transformers import Conversation as Conversation
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -53,11 +53,11 @@ def chat():
     if len(conversations) <= conversation_id:
         conversations.append(Conversation())
 
-    conversations[conversation_id].append_user(message)
+    conversations[conversation_id].add_user_input({'role': 'user', 'content': message})
     inputs = chat_tokenizer(conversations[conversation_id].messages, return_tensors='pt')
     reply = chat_model.generate(inputs.input_ids, max_length=50)
 
-    conversations[conversation_id].append_system(reply)
+    conversations[conversation_id].add_system_message({'role': 'system', 'content': reply})
 
     # Add CORS headers to the response
     response_headers = {
@@ -66,7 +66,10 @@ def chat():
         'Access-Control-Allow-Methods': 'POST'
     }
 
-    return jsonify({'reply': conversations[conversation_id].messages[-1]['content']}), 200, response_headers
+    return jsonify({'reply': reply}), 200, response_headers
 
 if __name__ == '__main__':
+    test = Conversation()
+
+    test.add_message({'':''})
     app.run(port=5000)
