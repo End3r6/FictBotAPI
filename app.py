@@ -39,7 +39,7 @@ def get_response():
 
 
 @app.route('/test', methods=['GET'])
-def get_response():
+def get_test():
     return jsonify({'name': 'test', 'response' : 'test'}).headers.add("Access-Control-Allow-Origin", "*")
 
 
