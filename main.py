@@ -6,7 +6,8 @@ model_paths = {
     # 'tony' : './models/tony_chatbot',
     'dia-small' : 'microsoft/DialoGPT-small',
     'dia-medium' : 'microsoft/DialoGPT-medium',
-    'dia-large' : 'microsoft/DialoGPT-large' }
+    'dia-large' : 'microsoft/DialoGPT-large', 
+    'blender-400m' : 'facebook/blenderbot-400M-distill' }
 
 
 chat_model = None

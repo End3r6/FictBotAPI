@@ -8,7 +8,8 @@ model_paths = {
     # 'tony' : './models/tony_chatbot',
     'dia_small' : 'microsoft/DialoGPT-small',
     'dia_medium' : 'microsoft/DialoGPT-medium',
-    'dia_large' : 'microsoft/DialoGPT-large' }
+    'dia_large' : 'microsoft/DialoGPT-large', 
+    'blender-400m' : 'facebook/blenderbot-400M-distill' }
 
 
 app = Flask(__name__)
