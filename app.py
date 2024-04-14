@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import model
@@ -16,7 +15,6 @@ model_paths = {
 
 
 app = Flask(__name__)
-CORS(app)
 
 step = 0
 
@@ -27,10 +25,10 @@ def get_response():
     model_name = request.args.get('model_name')
     prompt = request.args.get('prompt')
 
-    get_model_from_name(model_name)
+    path =  model_paths[model_name]
 
-    if chat_model is None:
-        get_model_from_name('dia_medium')
+    chat_model = AutoModelForCausalLM.from_pretrained(path)
+    chat_model_tokenizer = AutoTokenizer.from_pretrained(path)
 
     response = model.generate_response(chat_model, chat_model_tokenizer, prompt, step, max_length=30)
 
@@ -38,17 +36,7 @@ def get_response():
 
     return jsonify({'name': model_name, 'response' : response}).headers.add("Access-Control-Allow-Origin", "*")
 
-def get_model_from_name(name):
-    global chat_model
-    global chat_model_tokenizer
 
-    if name not in model_paths:
-        name = 'dia_medium'
-        
-    path =  model_paths[name]
-
-    chat_model = AutoModelForCausalLM.from_pretrained(path)
-    chat_model_tokenizer = AutoTokenizer.from_pretrained(path)
 
 
 if __name__ == '__main__':
