@@ -4,13 +4,14 @@ import model
 from flask_cors import CORS
 
 model_paths = {
+    # 'gpt2' : './models/gpt2_chatbot',
     # 'tony' : './models/tony_chatbot',
+    # 'blender_small' : 'facebook/blenderbot-small'
     'dia_small' : 'microsoft/DialoGPT-small',
     'dia_medium' : 'microsoft/DialoGPT-medium',
     'dia_large' : 'microsoft/DialoGPT-large', 
     'blender_400m' : 'facebook/blenderbot-400M',
     'blender_90m' : 'facebook/blenderbot-90M',
-    'blender_small' : 'facebook/blenderbot-small'
 }
 
 app = Flask(__name__)
