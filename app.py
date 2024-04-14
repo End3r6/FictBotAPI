@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, request
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import model
+from transformers import Conversation
 from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app)
+
 model_paths = {
-    # 'gpt2' : './models/gpt2_chatbot',
-    # 'tony' : './models/tony_chatbot',
-    # 'blender_small' : 'facebook/blenderbot-small'
+    'meena' : 'google/meena-chatbot',
     'dia_small' : 'microsoft/DialoGPT-small',
     'dia_medium' : 'microsoft/DialoGPT-medium',
     'dia_large' : 'microsoft/DialoGPT-large', 
@@ -14,28 +15,22 @@ model_paths = {
     'blender_90m' : 'facebook/blenderbot-90M',
 }
 
-app = Flask(__name__)
-CORS(app)
-
-step = 0
 chat_model = None
-chat_model_tokenizer = None
-model_name = None
+chat_tokenizer = None
+conversations = []
 
+def initialize_model(model_name):
+    global chat_model, chat_tokenizer
+    model_path = model_paths[model_name]
+    chat_model = AutoModelForCausalLM.from_pretrained(model_path)
+    chat_tokenizer = AutoTokenizer.from_pretrained(model_path)
 
 @app.route('/model', methods=['POST'])
 def post_model():
-    global chat_model, chat_model_tokenizer, model_name
-
     model_name = request.args.get('model_name')
-
     if model_name is None:
         model_name = 'dia_medium'
-
-    path = model_paths[model_name]
-
-    chat_model = AutoModelForCausalLM.from_pretrained(path)
-    chat_model_tokenizer = AutoTokenizer.from_pretrained(path)
+    initialize_model(model_name)
 
     # Add CORS headers to the response
     response_headers = {
@@ -44,36 +39,41 @@ def post_model():
         'Access-Control-Allow-Methods': 'POST'
     }
 
-    return "", 200, response_headers
+    return jsonify({'model': model_name}), 200, response_headers
 
+@app.route('/chat', methods=['POST'])
+def chat():
+    global conversations, chat_model, chat_tokenizer
+    data = request.get_json()
+    message = data['message']
+    conversation_id = data['conversation_id']
 
-@app.route('/chat', methods=['GET'])
-def get_response():
-    global step, chat_model, chat_model_tokenizer, model_name
+    if len(conversations) <= conversation_id:
+        conversations.append(Conversation())
 
-    prompt = request.args.get('prompt')
+    conversations[conversation_id].append_user(message)
+    inputs = chat_tokenizer(conversations[conversation_id].messages, return_tensors='pt')
+    reply = chat_model.generate(inputs.input_ids, max_length=50)
 
-    if prompt is None:
-        prompt = 'Hello'
-
-    response = model.generate_response(chat_model, chat_model_tokenizer, prompt, step, max_length=30)
-
-    step += 1
+    conversations[conversation_id].append_system(reply)
 
     # Add CORS headers to the response
     response_headers = {
         'Access-Control-Allow-Origin': '*',  # Change the '*' to the appropriate origin if needed
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'GET'
+        'Access-Control-Allow-Methods': 'POST'
     }
 
-    return jsonify({'name': model_name, 'response': response}), 200, response_headers
-
-
-@app.route('/test', methods=['GET'])
-def get_test():
-    return jsonify({'name': 'test', 'response': 'test'})
-
+    return jsonify({'reply': conversations[conversation_id].messages[-1]['content']}), 200, response_headers
 
 if __name__ == '__main__':
+    initialize_model('dia_medium')  # Set the default model here
+
+    # Add CORS headers to the response
+    response_headers = {
+        'Access-Control-Allow-Origin': '*',  # Change the '*' to the appropriate origin if needed
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST'
+    }
+
     app.run(port=5000)
