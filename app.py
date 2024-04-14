@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import model
+from flask_cors import CORS
 
 model_paths = {
     # 'tony' : './models/tony_chatbot',
@@ -11,6 +12,7 @@ model_paths = {
 
 
 app = Flask(__name__)
+CORS(app)
 
 step = 0
 
@@ -35,7 +37,14 @@ def get_response():
 
     step += 1
 
-    return jsonify({'name': model_name, 'response' : response})
+    # Add CORS headers to the response
+    response_headers = {
+        'Access-Control-Allow-Origin': '*',  # Change the '*' to the appropriate origin if needed
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET'
+    }
+
+    return jsonify({'name': model_name, 'response': response}), 200, response_headers
 
 
 @app.route('/test', methods=['GET'])
