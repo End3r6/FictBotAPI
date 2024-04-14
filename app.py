@@ -3,10 +3,6 @@ from flask import Flask, jsonify, request
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import model
 
-chat_model = None
-chat_model_tokenizer = None
-
-
 model_paths = {
     # 'tony' : './models/tony_chatbot',
     'dia_small' : 'microsoft/DialoGPT-small',
