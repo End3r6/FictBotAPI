@@ -21,6 +21,11 @@ def get_response():
     model_name = request.args.get('model_name')
     prompt = request.args.get('prompt')
 
+    if model_name is None:
+        model_name = 'dia_medium'
+    if prompt is None:
+        prompt = 'Hello'
+
     path =  model_paths[model_name]
 
     chat_model = AutoModelForCausalLM.from_pretrained(path)
