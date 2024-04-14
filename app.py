@@ -34,7 +34,14 @@ def post_model():
     chat_model = AutoModelForCausalLM.from_pretrained(path)
     chat_model_tokenizer = AutoTokenizer.from_pretrained(path)
 
-    return ""
+    # Add CORS headers to the response
+    response_headers = {
+        'Access-Control-Allow-Origin': '*',  # Change the '*' to the appropriate origin if needed
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST'
+    }
+
+    return "", 200, response_headers
 
 
 @app.route('/chat', methods=['GET'])
